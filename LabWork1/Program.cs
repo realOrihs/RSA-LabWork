@@ -382,7 +382,7 @@ namespace LabWork1
 
         public static class RSA 
         {
-            private static BigInt CalculatePublicExponent(BigInt module)
+            public static BigInt CalculatePublicExponent(BigInt module)
             {
                 var exponent = new BigInt(3);
                 var one = new BigInt(1);
@@ -397,7 +397,7 @@ namespace LabWork1
                 return exponent;
             }
 
-            private static BigInt CalculatePrivateExponent(BigInt publicExp, BigInt module)
+            public static BigInt CalculatePrivateExponent(BigInt publicExp, BigInt module)
                 => RevEuqlFuncRes(publicExp, module);
             
 

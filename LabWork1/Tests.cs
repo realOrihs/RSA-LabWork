@@ -189,6 +189,44 @@ namespace LabWork1
             var result = RSA.RevEuqlFuncRes(new BigInt(first), new BigInt(second)).ToString();
             Assert.AreEqual(expected, result);
         }
+
+        [Test]
+        [TestCase("hello", "17", "23")]
+        [TestCase("hello", "101", "103")]
+        
+        public void CorrectDecode(string value, string number1, string number2)
+        {
+            var p = new BigInt(number1);
+            var q = new BigInt(number2);
+            var module = p * q;
+            var phi = (p - new BigInt(1)) * (q - new BigInt(1));
+            var publicExp = RSA.CalculatePublicExponent(phi);
+            var privateExp = RSA.CalculatePrivateExponent(publicExp, phi);
+
+            var message = Encoding.ASCII
+                                 .GetBytes(value)
+                                 .Select(x => (int)x)
+                                 .ToArray();
+            var encodedMsg = new List<BigInt>();
+            foreach (var code in message)
+            {
+                if (new BigInt(code.ToString()) > module) throw new Exception("Module is too small - use bigger prime numbers");
+                var encodedLetter = BigInt.ModPow(new BigInt(code.ToString()), publicExp, module);
+                encodedMsg.Add(encodedLetter);
+                Console.Write(encodedLetter + " ");
+            }
+
+            var decodedLetters = new List<int>();
+            foreach (var code in encodedMsg)
+            {
+                var decodedLetter = BigInt.ModPow(new BigInt(code.ToString()), privateExp, module);
+                decodedLetters.Add(int.Parse(decodedLetter.ToString()));
+            }
+            var decodedMsg = Encoding.ASCII.GetString(decodedLetters.Select(x => (byte)x).ToArray());
+           
+            CollectionAssert.AreEqual(decodedMsg, message);
+        }
+        
     }
 }
 
